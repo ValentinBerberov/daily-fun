@@ -16,15 +16,12 @@ import random
 # Example word to guess
 words = ["абвгд", "бвгде", "вгдеж"]
 
-secret_word = random.choice(words)
-print(secret_word)
-
 class WordleGame(FloatLayout):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.cols=11
-        width = Window.size[0]
-        height = Window.size[1]
+
+        self.secret_word = random.choice(words)
+        print(self.secret_word)
 
         keys = [ 'Я', 'В', 'Е', 'Р', 'Т', 'Ъ', 'У', 'И', 'О', 'П', 'Ч',
                 'А', 'С', 'Д', 'Ф', 'Г', 'Х', 'Й', 'К', 'Л', 'Ш', 'Щ',
@@ -45,8 +42,7 @@ class WordleGame(FloatLayout):
                 for j in range(5):
                     self.square = Rectangle(pos=(250+60*j, 480-i*60), size=(50, 50))
                     self.squares.append(self.square)
-        
-        
+
         for i in range(6):
             for j in range(5):
                 self.label = Label(text="", pos=(60*j-124, 205-i*60), font_size=30, bold=True)
@@ -87,8 +83,11 @@ class WordleGame(FloatLayout):
                 self.user_input = ""
                 colors = self.check_letters()
                 self.color_buttons(colors)
+                self.color_grid(colors)
+                res = self.check_word()
+                if res or self.tries==5:
+                    self.show_popup(res)
                 self.tries+=1
-        print(self.user_input)
         for i in range(len(self.user_input)):
             self.labels[self.tries*5+i].text=self.user_input[i]
         pass
@@ -97,9 +96,9 @@ class WordleGame(FloatLayout):
         colors = []
 
         for i in range(0, 5):
-            if self.answers[self.tries][i].lower() == secret_word[i]:
+            if self.answers[self.tries][i].lower() == self.secret_word[i]:
                 colors.append("G")
-            elif self.answers[self.tries][i].lower() in secret_word:
+            elif self.answers[self.tries][i].lower() in self.secret_word:
                 colors.append("Y")
             else:
                 colors.append("N")
@@ -107,11 +106,56 @@ class WordleGame(FloatLayout):
         return colors
     
     def check_word(self):
-        if self.answers[self.tries]==secret_word:
+        if self.answers[self.tries].lower()==self.secret_word.lower():
             print("You Win!")
-        
-        return True
+            return True
+        else:
+            return False
     
+    def show_popup(self, result):
+        content = BoxLayout()
+        
+        if result:
+            label = Label(text="You win!", pos=(100, 100), font_size=24)
+        elif not result and self.tries==5:
+            label = Label(text="You lose!", pos=(100, 100), font_size=24)
+
+        close_button = Button(text="Restart",size_hint=(None, None), size=(100, 50), pos=(50, 20))
+        content.add_widget(label)
+        content.add_widget(close_button)
+
+        popup  =  Popup(title="Result",
+                        content=content,
+                        size_hint=(None, None),
+                        size=(300, 200),
+                        auto_dismiss=False)
+        
+        close_button.bind(on_release=popup.dismiss)
+        popup.open()
+    
+    def color_grid(self, colors):
+        for i in range(5):
+            color = colors[i]
+            if color == "G":
+                self.canvas.add(Color(0, 0.5, 0, 1))
+            elif color == "Y":
+                self.canvas.add(Color(0.8, 0.8, 0, 1))
+            else:
+                self.canvas.add(Color(0.3, 0.3, 0.3, 1))
+            
+            self.canvas.add(self.squares[self.tries * 5 + i])
+        
+        for label in self.labels:
+            self.remove_widget(label)
+        for i in range(6):
+            for j in range(5):
+                self.add_widget(self.labels[i*5+j])
+        
+        for j in range(self.tries+1):
+            for i in range(5):
+                self.labels[j*5+i].text=self.answers[j][i]
+
+
     def color_buttons(self, colors):
         for i in range(5):
             for button in self.buttons:
@@ -122,7 +166,10 @@ class WordleGame(FloatLayout):
                         button.background_color=(0.8, 0.8, 0, 1)
                     elif colors[i]=="N":
                         button.background_color=(0.2, 0.2, 0.2, 1)
-            
+    
+    def restart(self):
+        
+        pass
 
 
 class WordleApp(App):
