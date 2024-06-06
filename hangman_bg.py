@@ -8,8 +8,17 @@ from kivy.uix.gridlayout import GridLayout
 from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.widget import Widget
 from kivy.graphics import Line, Color, Rectangle
+from kivy.animation import Animation
 
 kivy.require('1.11.1')
+
+def get_random_word(game_type):
+    conn = sqlite3.connect('game_words.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT word FROM words WHERE game_type = ?", (game_type,))
+    words = cursor.fetchall()
+    conn.close()
+    return random.choice(words)[0]
 
 # Main Menu Screen
 class MainMenu(BoxLayout):
@@ -17,14 +26,15 @@ class MainMenu(BoxLayout):
         super().__init__(**kwargs)
         self.switch_screen = switch_screen
         self.orientation = 'vertical'
-        self.padding = 10
-        self.spacing = 10
+        self.padding = 55
+        self.spacing = 55
+
+        #self.welcomeLabel = Label(text="WELCOME TO GAME MENU!", font_size='40sp', size_hint=(None, None))
+        #self.welcomeLabel.bind(size=self.welcomeLabel.setter('text_size'))
+        #BoxLayout.add_widget(self.welcomeLabel)
 
         self.add_widget(Label(text="Welcome to the Game Menu", font_size='32sp', size_hint=(1, 0.2)))
-
-        btn_hangman = Button(text="Hangman", font_size='24sp', size_hint=(1, 0.2))
-        btn_hangman.bind(on_press=lambda x: self.switch_screen('hangman'))
-        self.add_widget(btn_hangman)
+        #self.animate_label()
 
         btn_wordle = Button(text="Wordle", font_size='24sp', size_hint=(1, 0.2))
         btn_wordle.bind(on_press=lambda x: self.switch_screen('wordle'))
@@ -34,137 +44,13 @@ class MainMenu(BoxLayout):
         btn_riddle.bind(on_press=lambda x: self.switch_screen('riddle'))
         self.add_widget(btn_riddle)
 
-# Hangman Game Screen
-class HangmanGame(BoxLayout):
-    def __init__(self, switch_screen, **kwargs):
-        super().__init__(**kwargs)
-        self.switch_screen = switch_screen
-        self.orientation = 'vertical'
-        self.padding = 10
-        self.spacing = 10
-        self.word = "KIVY".upper()
-        self.guessed_letters = []
-        self.max_attempts = 6
-        self.attempts = 0
+    #def animate_label(self, instance):
+        #grow = Animation(width = 200, height = 100, duration = 1.5)
+        #shrink = Animation(width = 100, height = 50, duration = 1.5)
+        #animation_label = grow + shrink
+        #animation_label.start(self.welcomeLabel)
 
-        self.top_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
-        self.btn_wordle = Button(text="Wordle", font_size='20sp')
-        self.btn_wordle.bind(on_press=lambda x: self.switch_screen('wordle'))
-        self.top_layout.add_widget(self.btn_wordle)
 
-        self.btn_riddle = Button(text="Riddle", font_size='20sp')
-        self.btn_riddle.bind(on_press=lambda x: self.switch_screen('riddle'))
-        self.top_layout.add_widget(self.btn_riddle)
-        
-        self.add_widget(self.top_layout)
-
-        self.hangman_label = Label(text=self.get_hangman_display(), font_size='32sp', size_hint=(1, 0.4))
-        self.add_widget(self.hangman_label)
-
-        self.word_label = Label(text=self.get_display_word(), font_size='32sp', size_hint=(1, 0.2))
-        self.add_widget(self.word_label)
-
-        self.input_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.2))
-        self.letter_input = TextInput(multiline=False, font_size='32sp', size_hint=(0.7, 1))
-        self.guess_button = Button(text="Guess", font_size='32sp', size_hint=(0.3, 1))
-        self.guess_button.bind(on_press=self.make_guess)
-        self.input_layout.add_widget(self.letter_input)
-        self.input_layout.add_widget(self.guess_button)
-        self.add_widget(self.input_layout)
-
-    def get_display_word(self):
-        return ' '.join([letter if letter in self.guessed_letters else '_' for letter in self.word])
-
-    def get_hangman_display(self):
-        stages = [
-            """
-            -----
-            |   |
-                |
-                |
-                |
-                |
-            -----
-            """,
-            """
-            -----
-            |   |
-            O   |
-                |
-                |
-                |
-            -----
-            """,
-            """
-            -----
-            |   |
-            O   |
-            |   |
-                |
-                |
-            -----
-            """,
-            """
-            -----
-            |   |
-            O   |
-           /|   |
-                |
-                |
-            -----
-            """,
-            """
-            -----
-            |   |
-            O   |
-           /|\\  |
-                |
-                |
-            -----
-            """,
-            """
-            -----
-            |   |
-            O   |
-           /|\\  |
-           /    |
-                |
-            -----
-            """,
-            """
-            -----
-            |   |
-            O   |
-           /|\\  |
-           / \\  |
-                |
-            -----
-            """
-        ]
-        return stages[self.attempts]
-
-    def make_guess(self, instance):
-        guess = self.letter_input.text.upper()
-        self.letter_input.text = ''
-
-        if len(guess) == 1 and guess.isalpha() and guess not in self.guessed_letters:
-            self.guessed_letters.append(guess)
-            if guess not in self.word:
-                self.attempts += 1
-
-        self.word_label.text = self.get_display_word()
-        self.hangman_label.text = self.get_hangman_display()
-
-        if '_' not in self.get_display_word():
-            self.word_label.text = f"You won! The word was {self.word}"
-            self.end_game()
-        elif self.attempts >= self.max_attempts:
-            self.word_label.text = f"You lost! The word was {self.word}"
-            self.end_game()
-
-    def end_game(self):
-        self.letter_input.disabled = True
-        self.guess_button.disabled = True
 
 # Wordle Game Screen
 class WordleGame(BoxLayout):
@@ -179,9 +65,9 @@ class WordleGame(BoxLayout):
         self.max_attempts = 5
 
         self.top_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
-        self.btn_hangman = Button(text="Hangman", font_size='20sp')
-        self.btn_hangman.bind(on_press=lambda x: self.switch_screen('hangman'))
-        self.top_layout.add_widget(self.btn_hangman)
+        #self.btn_hangman = Button(text="Hangman", font_size='20sp')
+        #self.btn_hangman.bind(on_press=lambda x: self.switch_screen('hangman'))
+        #self.top_layout.add_widget(self.btn_hangman)
 
         self.btn_riddle = Button(text="Riddle", font_size='20sp')
         self.btn_riddle.bind(on_press=lambda x: self.switch_screen('riddle'))
@@ -249,9 +135,9 @@ class RiddleGame(BoxLayout):
         self.max_attempts = 4
 
         self.top_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
-        self.btn_hangman = Button(text="Hangman", font_size='20sp')
-        self.btn_hangman.bind(on_press=lambda x: self.switch_screen('hangman'))
-        self.top_layout.add_widget(self.btn_hangman)
+        #self.btn_hangman = Button(text="Hangman", font_size='20sp')
+        #self.btn_hangman.bind(on_press=lambda x: self.switch_screen('hangman'))
+        #self.top_layout.add_widget(self.btn_hangman)
 
         self.btn_wordle = Button(text="Wordle", font_size='20sp')
         self.btn_wordle.bind(on_press=lambda x: self.switch_screen('wordle'))
