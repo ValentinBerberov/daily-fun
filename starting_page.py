@@ -19,29 +19,19 @@ class MainMenu(BoxLayout):
         super().__init__(**kwargs)
         self.switch_screen = switch_screen
         self.orientation = 'vertical'
-        self.padding = 55
-        self.spacing = 55
+        self.padding = 50
+        self.spacing = 50
 
-        #self.welcomeLabel = Label(text="WELCOME TO GAME MENU!", font_size='40sp', size_hint=(None, None))
-        #self.welcomeLabel.bind(size=self.welcomeLabel.setter('text_size'))
-        #BoxLayout.add_widget(self.welcomeLabel)
 
-        self.add_widget(Label(text="Добре дошли в менюто за игри!", color = (1,0.149,0.337,1),font_name='fonts/SeymourOne-Regular.ttf', font_size='32sp', size_hint=(1, 0.2)))
-        #self.animate_label()
+        self.add_widget(Label(text="Меню за игри!", color = (1,0.149,0.149,1),font_name='fonts/SeymourOne-Regular.ttf', font_size='48sp', size_hint=(1, 0.2)))
 
-        btn_wordle = Button(text="Уърдъл", background_color=(0.204,0.89,0.569,1), font_name='fonts/SeymourOne-Regular.ttf',font_size='32sp', size_hint=(1, 0.2))
+        btn_wordle = Button(text="Уърдъл", background_color=(0, 0.051,1,1), font_name='fonts/SeymourOne-Regular.ttf',font_size='32sp', size_hint=(1, 0.2))
         btn_wordle.bind(on_press=lambda x: self.switch_screen('wordle'))
         self.add_widget(btn_wordle)
 
-        btn_riddle = Button(text="Познай гатанката", background_color=(0.204,0.89,0.569,1) ,font_name='fonts/SeymourOne-Regular.ttf',font_size='32sp', size_hint=(1, 0.2))
+        btn_riddle = Button(text="Познай гатанката", background_color=(0, 0.051,1,1) ,font_name='fonts/SeymourOne-Regular.ttf',font_size='32sp', size_hint=(1, 0.2))
         btn_riddle.bind(on_press=lambda x: self.switch_screen('riddle'))
         self.add_widget(btn_riddle)
-
-        #def animate_label(self, instance):
-        #grow = Animation(width = 200, height = 100, duration = 1.5)
-        #shrink = Animation(width = 100, height = 50, duration = 1.5)
-        #animation_label = grow + shrink
-        #animation_label.start(self.welcomeLabel)
 
 if __name__ == '__main__':
     MainMenu().run()

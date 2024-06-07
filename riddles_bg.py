@@ -9,17 +9,21 @@ from kivy.uix.anchorlayout import AnchorLayout
 from kivy.uix.widget import Widget
 from kivy.graphics import Line, Color, Rectangle
 from kivy.animation import Animation
+from kivy.core.window import Window
 import sqlite3
 
-from main import get_random_word
+from random_word import get_random_word
 
 # Riddle Game Screen
 class RiddleGame(BoxLayout):
     def __init__(self, switch_screen, **kwargs):
         super().__init__(**kwargs)
+        Window.size = (800, 600)
         self.switch_screen = switch_screen
         self.orientation = 'vertical'
-        self.padding = 35
+        
+        self.padding = (35, 10)
+        
         self.spacing = 35
 
         #RIDDLE TEXT AND ANSWER
@@ -31,13 +35,9 @@ class RiddleGame(BoxLayout):
         self.attempts = []
         self.max_attempts = 5
 
-        self.top_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1))
-
-        self.btn_wordle = Button(text="Портал към играта Уърдъл", font_size='20sp')
+        self.btn_wordle = Button(text="Портал към играта Уърдъл", font_size='20sp', size_hint=(None, None), size=(730, 50))
         self.btn_wordle.bind(on_press=lambda x: self.switch_screen('wordle'))
-        self.top_layout.add_widget(self.btn_wordle)
-        
-        self.add_widget(self.top_layout)
+        self.add_widget(self.btn_wordle)
 
         self.add_widget(Label(text=self.riddle, font_size='24sp', size_hint=(1, 0.4)))
 
