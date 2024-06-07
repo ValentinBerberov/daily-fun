@@ -188,7 +188,7 @@ class WordleGame(FloatLayout):
 
         self.generate_word()
 
-        self.btn_wordle = Button(text="Портал към играта Уърдъл", font_size='20sp', pos=(35, 540), size_hint=(None, None), size=(730, 50))
+        self.btn_wordle = Button(text="Портал към играта Познай гатанката", font_size='20sp', pos=(35, 540), size_hint=(None, None), size=(730, 50))
         self.btn_wordle.bind(on_press=lambda x: self.switch_screen('riddle'))
         self.add_widget(self.btn_wordle)
 
