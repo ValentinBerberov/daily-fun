@@ -23,8 +23,6 @@ import database as dp
 
 dp.setup_database()
 
-# Database helper functions
-
 
 class MyGameApp(App):
     def build(self):
