@@ -23,7 +23,6 @@ class RiddleGame(BoxLayout):
         self.orientation = 'vertical'
         
         self.padding = (35, 10)
-        
         self.spacing = 35
 
         #RIDDLE TEXT AND ANSWER
@@ -35,9 +34,13 @@ class RiddleGame(BoxLayout):
         self.attempts = []
         self.max_attempts = 5
 
-        self.btn_wordle = Button(text="Портал към играта Уърдъл", font_size='20sp', size_hint=(None, None), size=(730, 50))
+        self.top_layout = BoxLayout(orientation='horizontal', size_hint=(1, 0.1), pos_hint={"top": 1})
+        
+        self.btn_wordle = Button(text="Портал към играта Уърдъл", font_size='20sp')
         self.btn_wordle.bind(on_press=lambda x: self.switch_screen('wordle'))
-        self.add_widget(self.btn_wordle)
+        self.top_layout.add_widget(self.btn_wordle)
+
+        self.add_widget(self.top_layout)
 
         self.add_widget(Label(text=self.riddle, font_size='24sp', size_hint=(1, 0.4)))
 

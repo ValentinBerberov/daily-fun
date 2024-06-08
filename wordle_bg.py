@@ -25,14 +25,15 @@ class WordleGame(FloatLayout):
         self.switch_screen = switch_screen
         Window.size_hint=(None, None)
         Window.size=(800, 600)
-        self.padding = 35
-        self.spacing = 35
-        self.secret_word = ""  
         
+        self.padding = (35, 10)
+        self.spacing = 35
+
+        self.secret_word = ""  
 
         self.keys = ['Я', 'В', 'Е', 'Р', 'Т', 'Ъ', 'У', 'И', 'О', 'П', 'Ч',
                 'А', 'С', 'Д', 'Ф', 'Г', 'Х', 'Й', 'К', 'Л', 'Ш', 'Щ',
-                'Enter', 'З', 'Ь', 'Ц', 'Ж', 'Б', 'Н', 'М', 'Ю', 'Delete']
+                'Enter', 'З', 'Ь', 'Ц', 'Ж', 'Б', 'Н', 'М', 'Ю', 'Delete', 'Clear']
 
         self.restart()
         
@@ -49,6 +50,11 @@ class WordleGame(FloatLayout):
             self.user_input = self.user_input[:-1]
 
             self.labels[self.tries * 5 + len(self.user_input)].text = ""
+
+        if key == 'Clear':
+            self.user_input = ""
+            for i in range(5):
+                self.labels[self.tries * 5 + i].text = ""
 
         if len(self.user_input) == 5:
             if key == "Enter":
@@ -80,7 +86,6 @@ class WordleGame(FloatLayout):
 
     def check_word(self):
         if self.answers[self.tries].lower() == self.secret_word.lower():
-            # print("You Win!")
             return True
         else:
             return False
@@ -160,39 +165,32 @@ class WordleGame(FloatLayout):
 
             for i in range(6):
                 for j in range(5):
-                    self.square = Rectangle(pos=(250 + 60 * j, 480 - i * 60), size=(50, 50))
+                    self.square = Rectangle(pos=(Window.size[0]*0.33+55*j, Window.size[1]*0.76-55*i), size=(50, 50))
                     self.squares.append(self.square)
 
         for i in range(6):
             for j in range(5):
-                self.label = Label(text="", pos=(60 * j - 124, 205 - i * 60), font_size=30, bold=True)
+                self.label = Label(text="", pos=(-Window.size[0]*0.1375+55*j, Window.size[1]*0.3-55*i), font_size=30, bold=True)
                 
                 self.labels.append(self.label)
                 self.add_widget(self.label)
 
-        for i in range(2):
-            for j in range(11):
-                if i == 2 and j >= 10:
-                    break
-                self.button = Button(text=self.keys[11 * i + j], pos=(95 + 55 * j, 110 - i * 55), size_hint=(None, None),
-                                     size=(50, 50), background_color=(0.9, 0.9, 0.9, 1))
-                self.button.bind(on_press=self.on_key_press)
-                self.buttons.append(self.button)
-                self.add_widget(self.button)
-
-        for j in range(10):
-            self.button = Button(text=self.keys[22 + j], pos=(125 + 55 * j, 0), size_hint=(None, None), size=(50, 50))
-            self.button.bind(on_press=self.on_key_press)
-            self.buttons.append(self.button)
-            self.add_widget(self.button)
+        keyboard_layout = GridLayout(cols=11, rows=3, size_hint=(None, None), size=(550, 150), pos_hint={'center_x':0.5, 'y':0.02})
+        for key in self.keys:
+            button = Button(text=key, size_hint=(None, None), size=(50, 50), background_color=(0.9, 0.9, 0.9, 1))
+            button.bind(on_press=self.on_key_press)
+            self.buttons.append(button)
+            keyboard_layout.add_widget(button)
+        self.add_widget(keyboard_layout)
 
         self.generate_word()
 
-        self.btn_wordle = Button(text="Портал към играта Познай гатанката", font_size='20sp', pos=(35, 540), size_hint=(None, None), size=(730, 50))
+        self.top_layout = BoxLayout(orientation='horizontal', size_hint=(0.93, 0.085), pos_hint={"center_x": 0.5, "top":0.99})
+
+        self.btn_wordle = Button(text="Портал към играта Познай гатанката", font_size='20sp')
         self.btn_wordle.bind(on_press=lambda x: self.switch_screen('riddle'))
-        self.add_widget(self.btn_wordle)
+        self.top_layout.add_widget(self.btn_wordle)
 
-
-        #print(self.secret_word)
+        self.add_widget(self.top_layout)
 
         pass
