@@ -12,6 +12,7 @@ from kivy.uix.widget import Widget
 from kivy.graphics import Rectangle, Color
 from kivy.core.window import Window
 import random
+import database as dp
 
 from random_word import get_random_word
 
@@ -28,7 +29,7 @@ class WordleGame(FloatLayout):
         
         self.padding = (35, 10)
         self.spacing = 35
-
+        self.button_colors = {}
         self.secret_word = ""  
 
         self.keys = ['Я', 'В', 'Е', 'Р', 'Т', 'Ъ', 'У', 'И', 'О', 'П', 'Ч',
@@ -58,15 +59,18 @@ class WordleGame(FloatLayout):
 
         if len(self.user_input) == 5:
             if key == "Enter":
-                self.answers.append(self.user_input)
-                self.user_input = ""
-                colors = self.check_letters()
-                self.color_buttons(colors)
-                self.color_grid(colors)
-                res = self.check_word()
-                if res or self.tries == 5:
-                    self.show_popup(res)
-                self.tries += 1
+                if self.user_input.lower() in dp.wordle_words:
+                    self.answers.append(self.user_input)
+                    self.user_input = ""
+                    colors = self.check_letters()
+                    self.color_buttons(colors)
+                    self.color_grid(colors)
+                    res = self.check_word()
+                    if res or self.tries == 5:
+                        self.show_popup(res)
+                    self.tries += 1
+                else:
+                    print("Word not in word list")
         for i in range(len(self.user_input)):
             self.labels[self.tries * 5 + i].text = self.user_input[i]
         pass
@@ -94,9 +98,9 @@ class WordleGame(FloatLayout):
         content = BoxLayout(orientation="vertical")
 
         if result:
-            label = Label(text="You win!", font_size=24)
+            label = Label(text="Спечели!", font_size=24)
         elif not result and self.tries == 5:
-            label = Label(text="You lose!", font_size=24)
+            label = Label(text=f"            Загуби!\n Думата беше {self.secret_word}", font_size=24)
 
         close_button = Button(text="Restart", size=(100, 50))
         close_button.x=100
