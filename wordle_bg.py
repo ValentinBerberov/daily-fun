@@ -150,7 +150,7 @@ class WordleGame(FloatLayout):
         self.restart()
 
     def restart(self):
-        self.clear_widgets()
+        self.canvas.clear()
 
         self.user_input = ""
         self.answers = []
@@ -165,12 +165,12 @@ class WordleGame(FloatLayout):
 
             for i in range(6):
                 for j in range(5):
-                    self.square = Rectangle(pos=(Window.size[0]*0.33+55*j, Window.size[1]*0.76-55*i), size=(50, 50))
+                    self.square = Rectangle(pos=(Window.size[0]/2-135+55*j, Window.size[1]/2+162.5-55*i), size=(50, 50))
                     self.squares.append(self.square)
 
         for i in range(6):
             for j in range(5):
-                self.label = Label(text="", pos=(-Window.size[0]*0.1375+55*j, Window.size[1]*0.3-55*i), font_size=30, bold=True)
+                self.label = Label(text="", pos=(-110+55*j, 187.5-55*i), font_size=30, bold=True)
                 
                 self.labels.append(self.label)
                 self.add_widget(self.label)
